@@ -4,6 +4,8 @@ const app = express();
 app.use(express.json());
 const quotes = require("./quotes.json");
 
+let quotesIDFromDatabase = quotes.length - 1;
+
 app.get("/", function (request, response) {
   response.send("/quotes/17 should return one quote, by id");
 });
@@ -25,9 +27,13 @@ app.get("/quotes/:id", function (request, response) {
 });
 
 app.post("/quotes", function (request, response) {
-  console.log("POST /quotes route");
-  console.log(request.body);
-  quotes.push(request.body);
+  const requestBody = request.body;
+  const { quote, author } = requestBody;
+  let createNewObj = { quote, author };
+  quotesIDFromDatabase += 1;
+  createNewObj.id = quotesIDFromDatabase;
+  quotes.push(createNewObj);
+  response.status(201).send();
 });
 
 app.put("/quotes/:id", function (request, response) {
@@ -35,6 +41,11 @@ app.put("/quotes/:id", function (request, response) {
   const requestBody = request.body;
   const { quote, author } = requestBody;
   const result = quotes.find((element) => element.id == quotesId);
+  if (!result) {
+    response.status(404).send(`Quote with ID ${quotesId}  was not found`);
+    return;
+  }
+
   result.quote = quote;
   result.author = author;
   response.status(200).send("OK");
