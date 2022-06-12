@@ -50,5 +50,19 @@ app.put("/quotes/:id", function (request, response) {
   result.author = author;
   response.status(200).send("OK");
 });
+app.delete("/quotes/:id", function (request, response) {
+  const quotesId = request.params.id;
+  const result = quotes.find((element) => element.id == quotesId);
+  if (!result) {
+    response.status(404).send(`Quote with ID ${quotesId}  was not found`);
+    return;
+  }
+
+  const findElementIndex = quotes.findIndex(
+    (element) => element.id == quotesId
+  );
+  quotes.splice(findElementIndex, 1);
+  response.status(204).send();
+});
 
 app.listen(3000, () => console.log("Listening on port 3000"));
