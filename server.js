@@ -10,7 +10,21 @@ app.get("/", function (request, response) {
   response.send("/quotes/17 should return one quote, by id");
 });
 
+//Find one ore more properties from all objects in the array
 app.get("/quotes", function (request, response) {
+  const filter = request.query.filter;
+  //console.log(filter);
+  if (filter) {
+    const result = quotes.map((quote) => {
+      if (typeof filter === "object") {
+        return filter.map((parameter) => quote[parameter]).join(", ");
+      } else {
+        return quote[filter];
+      }
+    });
+    response.send(result);
+    return;
+  }
   response.send(quotes);
 });
 
